@@ -46,18 +46,18 @@ public class LogInPanel extends JPanel
 		this.userField = new JTextField();//creating email address field
 		userField.setFont(new Font("Tahoma", Font.PLAIN, 22));
 		this.userField.setBounds(220, 220, 300, 35);
-		add(this.userField);
+		this.add(this.userField);
 		
 		this.passwordField = new JPasswordField();//email password field
 		passwordField.setFont(new Font("Tahoma", Font.PLAIN, 22));
 		this.passwordField.setBounds(220, 290, 300, 35);
-		add(this.passwordField);
+		this.add(this.passwordField);
 		
 		this.title = new JLabel("GMail Client");//gmail title label
 		this.title.setFont(new Font("Tahoma", Font.PLAIN, 43));
 		this.title.setHorizontalAlignment(SwingConstants.CENTER);
 		this.title.setBounds(140, 20, 300, 50);
-		add(this.title);
+		this.add(this.title);
 		
 		this.loginPrompt = new JLabel("Please log in:");//prompt label
 		this.loginPrompt.setFont(new Font("Tahoma", Font.PLAIN, 29));
@@ -68,12 +68,12 @@ public class LogInPanel extends JPanel
 		this.emailLabel = new JLabel("Email:");//email label
 		this.emailLabel.setFont(new Font("Tahoma", Font.PLAIN, 28));
 		this.emailLabel.setBounds(40, 220, 200, 35);
-		add(this.emailLabel);
+		this.add(this.emailLabel);
 		
 		this.passLabel = new JLabel("Password:");//password label
 		this.passLabel.setFont(new Font("Tahoma", Font.PLAIN, 28));
 		this.passLabel.setBounds(40, 290, 200, 35);
-		add(this.passLabel);
+		this.add(this.passLabel);
 		
 		this.logButton = new JButton("Login");//login button
 		this.logButton.setFont(new Font("Tahoma", Font.PLAIN, 28));
@@ -85,7 +85,7 @@ public class LogInPanel extends JPanel
 	
 	
 	/**method will try to log user in to email account
-	 * 
+	 * if it succeeds it will take the user to the main client page
 	 */
 	public void login()
 	{

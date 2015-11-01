@@ -21,7 +21,11 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 import java.awt.BorderLayout;
 
 
-
+/**this class represents the selection of a single email by a user
+ * it will specify the sender, the subject and the email content
+ * @author Charlie Street
+ *
+ */
 public class ReadEmail extends JFrame
 {
 	private Message message;
@@ -36,7 +40,7 @@ public class ReadEmail extends JFrame
 	 */
 	public ReadEmail(Message message) 
 	{
-		super("Read Message");
+		super("Read Message");//calling super constructor to set title
 		
 		try
 		{
@@ -81,7 +85,7 @@ public class ReadEmail extends JFrame
 			this.scrollPane = new JScrollPane();//creating the scroll pane
 			
 			GroupLayout gl_messagePanel = new GroupLayout(messagePanel);
-			gl_messagePanel.setHorizontalGroup(//using group layout and setting the horizontal layout
+			gl_messagePanel.setHorizontalGroup(//using group layout and setting the horizontal layout (auto-generated)
 				gl_messagePanel.createParallelGroup(Alignment.LEADING)
 					.addGroup(gl_messagePanel.createSequentialGroup()
 						.addContainerGap()
@@ -95,7 +99,7 @@ public class ReadEmail extends JFrame
 								.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 395, GroupLayout.PREFERRED_SIZE)
 								.addContainerGap(13, Short.MAX_VALUE))))
 			);
-			gl_messagePanel.setVerticalGroup(//setting the vertical layout
+			gl_messagePanel.setVerticalGroup(//setting the vertical layout (auto-generated)
 				gl_messagePanel.createParallelGroup(Alignment.LEADING)
 					.addGroup(gl_messagePanel.createSequentialGroup()
 						.addGap(9)
@@ -112,7 +116,7 @@ public class ReadEmail extends JFrame
 			messagePanel.setLayout(gl_messagePanel);//setting message layout to group layout
 			
 			setLocationRelativeTo(null);//displaying frame
-			setVisible(true);
+			setVisible(true);//display the window
 		}
 		catch(MessagingException e)//if error reading message
 		{

@@ -1,14 +1,19 @@
 package guiCode;
 
 import java.awt.Color;
+import java.awt.Component;
+import java.awt.Font;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+import javax.mail.Flags;
+import javax.mail.Flags.Flag;
 import javax.mail.Folder;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.Store;
+import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -65,18 +70,36 @@ public class DisplayMessages extends JPanel
 			{
 				JPanel currentEmail = new JPanel();//panel per email
 				
+				Flags messageFlags = message.getFlags();//getting the flags of the message
+				if(messageFlags.contains(Flag.SEEN))//if read make it gray, else white
+				{
+					currentEmail.setBackground(Color.LIGHT_GRAY);
+				}
+				else
+				{
+					currentEmail.setBackground(Color.WHITE);
+				}
+				
+				if(messageFlags.contains(Flag.RECENT))//if a recent message found
+				{
+					JLabel recent = new JLabel();//new jlabel for image
+					ImageIcon recimg = new ImageIcon("jar and images/recent.png");//getting the image
+					recent.setIcon(recimg);
+					
+					currentEmail.add(recent);//adding pic to email panel
+				}
+				
+				
 				JLabel from = new JLabel(message.getFrom()[0].toString().split(" ")[0]);//info to display
 				JLabel subject = new JLabel((message.getSubject().length() < 30 ? message.getSubject() : message.getSubject().substring(0,27)+"..."));//cutting subject
 				
 				currentEmail.add(from);//adding to currentPanel
 				currentEmail.add(subject);
-				currentEmail.setOpaque(true);
-				
-				currentEmail.setBackground(Color.WHITE);
+				currentEmail.setOpaque(true);//allows me to change color
 				
 				currentEmail.addMouseListener(new MouseAdapter() {//adding mouse events to the labels
 				      public void mouseClicked(MouseEvent e) {
-				    	  ReadEmail read = new ReadEmail(message);//displaying message on click
+				    	  readMessage(message,currentEmail);//message displayed on click
 				      }
 				});
 				
@@ -89,4 +112,24 @@ public class DisplayMessages extends JPanel
 			JOptionPane.showMessageDialog(this, "There has been an error retreiving emails. Please try again later","Email error" ,JOptionPane.ERROR_MESSAGE);
 		}
 	}
+	
+	/**this method will read an email and set it to seen 
+	 * 
+	 * @param message the message being dealt with
+	 */
+	private void readMessage(Message message, JPanel currentEmail)
+	{
+		try//try to open new email
+		{
+			ReadEmail read = new ReadEmail(message);//opens a new window
+			message.setFlag(Flag.SEEN, true);//setting to seen
+			currentEmail.setBackground(Color.LIGHT_GRAY);//changing color to seen color
+			
+		}
+		catch(MessagingException e)//if there is an error
+		{
+			JOptionPane.showMessageDialog(this, "There has been an error retreiving emails. Please try again later","Email error" ,JOptionPane.ERROR_MESSAGE);
+		}
+	}
+	
 }

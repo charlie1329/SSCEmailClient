@@ -33,7 +33,7 @@ public class CreateSession
 		properties.put("mail.smtp.starttls.enable", "true");
 		properties.put("mail.smtp.host", this.SMTPHOST);
 		properties.put("mail.smtp.port", "587");
-		properties.setProperty("mail.user", userName);
+		properties.setProperty("mail.user", userName);//specifying the email address and password
 		properties.setProperty("mail.password", password);
 		
 		properties.setProperty("mail.store.protocol","imaps");//setting up imaps protocol at same time
