@@ -32,6 +32,7 @@ public class LogInPanel extends JPanel
 	private JLabel title;
 	private JFrame parent;
 	private JButton logButton;
+	private CreateSession mySession;
 	
 	/**this constructor sets up all of the gui for the log in panel part of the application
 	 * 
@@ -40,6 +41,7 @@ public class LogInPanel extends JPanel
 	public LogInPanel(JFrame parent) 
 	{
 		this.parent = parent;
+		this.mySession = null;
 		
 		setLayout(null);//absolute positioning
 		
@@ -94,8 +96,8 @@ public class LogInPanel extends JPanel
 			String address = this.userField.getText();//getting login credentials
 			String password = new String(this.passwordField.getPassword());//real password
 			
-			CreateSession mySession = new CreateSession(address,password);//creating a session object
-			destroy(mySession.getSession(),address,password);//next part of program
+			this.mySession = new CreateSession(address,password);//creating a session object
+			destroy(address,password);//next part of program
 		}
 		catch(AuthenticationFailedException e)//if bad details entered
 		{
@@ -112,14 +114,29 @@ public class LogInPanel extends JPanel
 	 * @param userName the account user name
 	 * @param password the account password
 	 */
-	public void destroy(Session mySession, String userName, String password)
+	public void destroy( String userName, String password)
 	{
 		this.parent.getContentPane().remove(this);//removing and repainting
 		this.parent.getContentPane().revalidate();
 		this.parent.getContentPane().repaint();
 		//add main part here!!!
 		//test 
-		DisplayMessages display = new DisplayMessages(mySession,userName, password, "inbox");
+		DisplayMessages display = new DisplayMessages(this.mySession,userName, password, "inbox");
 		this.parent.add(display);
+	}
+	
+	/**this method closes everything for good practice at the end of the system running
+	 * 
+	 */
+	public void closeAll()
+	{
+		try//closing everything
+		{
+			this.mySession.closeItAll();
+		}
+		catch(MessagingException e)//if can't be closed
+		{
+			JOptionPane.showMessageDialog(this.parent, "Error while closing. Sorry for the inconvenience.", "Error closing", JOptionPane.ERROR_MESSAGE);
+		}
 	}
 }

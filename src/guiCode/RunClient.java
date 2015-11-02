@@ -1,5 +1,8 @@
 package guiCode;
 
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+
 import javax.swing.JFrame;
 
 /**this class will actually run the email client
@@ -17,11 +20,19 @@ public class RunClient
 	{
 		JFrame mainFrame = new JFrame("Gmail Client");
 		mainFrame.setSize(580, 650);
-		mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		mainFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		mainFrame.setResizable(false);//dont want resizable window
 		
 		LogInPanel logIn = new LogInPanel(mainFrame);//opening log in page
 		mainFrame.add(logIn);//adding to jFrame
+		
+		mainFrame.addWindowListener(new WindowAdapter(){//closing all parts of connection on exit
+			public void windowClosing(WindowEvent e)
+			{
+				logIn.closeAll();
+				System.exit(0);//closing system down
+			}
+		});
 		
 		mainFrame.setLocationRelativeTo(null);//centering on screen
 		mainFrame.setVisible(true);
