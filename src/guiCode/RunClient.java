@@ -12,12 +12,14 @@ import javax.swing.JFrame;
  */
 public class RunClient
 {
+	
 	/**main method creates a frame with a login panel and then sets to visible
 	 * so program can start
 	 * @param args command line arguments (none)
 	 */
 	public static void main(String[] args)
 	{
+
 		JFrame mainFrame = new JFrame("Gmail Client");
 		mainFrame.setSize(580, 650);
 		mainFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
@@ -29,7 +31,15 @@ public class RunClient
 		mainFrame.addWindowListener(new WindowAdapter(){//closing all parts of connection on exit
 			public void windowClosing(WindowEvent e)
 			{
-				logIn.closeAll();
+					try
+					{
+						logIn.closeAll();
+					}
+					catch(RuntimeException f)//in case not yet properly set up i.e not logged in
+					{
+						System.exit(0);//just exit the system as wished
+					}
+				
 				System.exit(0);//closing system down
 			}
 		});

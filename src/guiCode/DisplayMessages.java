@@ -93,18 +93,16 @@ public class DisplayMessages extends JPanel
 				}
 				
 				JLabel recent = new JLabel();//new jlabel for image if necessary(needs to be here for grid layout)
-				ImageIcon recimg = new ImageIcon("jar and images/recent.png");//getting the image
-				recent.setIcon(recimg);
 				if(messageFlags.contains(Flag.RECENT))//if a recent message found
 				{
-					//ImageIcon recimg = new ImageIcon("jar and images/recent.png");//getting the image
-					//recent.setIcon(recimg);
+					ImageIcon recimg = new ImageIcon("jar and images/recent.png");//getting the image
+					recent.setIcon(recimg);
 				}
 				
 				String sender = message.getFrom()[0].toString().split(" ")[0];//sender of email
-				if(sender.length() > 30)//cutting down if necessary
+				if(sender.length() > 20)//cutting down if necessary
 				{
-					sender = sender.substring(0,27)+"...";
+					sender = sender.substring(0,17)+"...";
 				}
 				
 				JLabel from = new JLabel(sender);//info to display
