@@ -1,6 +1,6 @@
 package guiCode;
 
-import java.awt.BorderLayout;
+
 import java.awt.FlowLayout;
 import java.io.File;
 import java.util.ArrayList;
@@ -15,7 +15,7 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
-import javax.swing.ImageIcon;
+
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
