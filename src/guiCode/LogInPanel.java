@@ -121,8 +121,9 @@ public class LogInPanel extends JPanel
 		this.parent.getContentPane().repaint();
 		//add main part here!!!
 		//test 
-		DisplayMessages display = new DisplayMessages(this.mySession,userName, password, "inbox");
-		this.parent.add(display);
+		//DisplayMessages display = new DisplayMessages(this.mySession,userName, password, "inbox");
+		//this.parent.add(display);
+		ComposeEmail compose = new ComposeEmail(this.mySession);
 	}
 	
 	/**this method closes everything for good practice at the end of the system running
