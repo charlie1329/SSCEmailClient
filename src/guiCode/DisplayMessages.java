@@ -1,6 +1,7 @@
 package guiCode;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -17,7 +18,6 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-
 
 import setup.CreateSession;
 
@@ -77,10 +77,13 @@ public class DisplayMessages extends JPanel
 			
 			Message[] messages = this.folder.getMessages();//getting all messages
 			
+			setPreferredSize(new Dimension(this.getWidth(),messages.length * 30));//setting size of panel for scroll bar
+			
 			for(Message message: messages)//looping round each message
 			{
 				JPanel currentEmail = new JPanel();//panel per email
-				currentEmail.setLayout(new GridLayout(1,3));
+				currentEmail.setLayout(null);//allows sime absolute positioning
+				currentEmail.setOpaque(true);//allows me to change colour
 				
 				Flags messageFlags = message.getFlags();//getting the flags of the message
 				if(messageFlags.contains(Flag.SEEN))//if read make it gray, else white
@@ -106,13 +109,24 @@ public class DisplayMessages extends JPanel
 				}
 				
 				JLabel from = new JLabel(sender);//info to display
-				JLabel subject = new JLabel((message.getSubject().length() < 30 ? message.getSubject() : message.getSubject().substring(0,27)+"..."));//cutting subject
-
-				currentEmail.add(recent);//adding pic to email panel
-				currentEmail.add(from);//adding to currentPanel
-				currentEmail.add(subject);
 				
-				currentEmail.setOpaque(true);//allows me to change colour
+				String sub = message.getSubject();//getting subject
+				if(sub == null)//no subject
+				{
+					sub = "(no subject)";
+				}
+				
+				JLabel subject = new JLabel((sub.length() < 40 ? sub : sub.substring(0,37)+"..."));//cutting subject
+				
+				from.setBounds(10,7,130,15);//setting bounds of labels
+				subject.setBounds(170,7,260,15);
+				recent.setBounds(420,7,15,15);
+				
+				currentEmail.add(from);//adding parts to current email
+				currentEmail.add(subject);
+				currentEmail.add(recent);//adding pic to email panel
+				
+				
 				currentEmail.setBorder(BorderFactory.createDashedBorder(Color.BLACK));//setting border on panel
 				
 				currentEmail.addMouseListener(new MouseAdapter() {//adding mouse events to the labels

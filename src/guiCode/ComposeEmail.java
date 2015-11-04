@@ -15,7 +15,7 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
-
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -95,7 +95,9 @@ public class ComposeEmail extends JFrame
 		
 		this.attachNames = new JLabel("Attachments: ");
 		
-		this.attach = new JButton("Attach");//button for attachments
+		this.attach = new JButton();//button for attachments
+		ImageIcon attachImg = new ImageIcon("jar and images/attach.png");
+		this.attach.setIcon(attachImg);
 		this.attach.addActionListener(e -> attach());//attachment method binded to button
 		
 		

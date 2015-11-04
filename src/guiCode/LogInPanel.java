@@ -2,9 +2,7 @@ package guiCode;
 
 import javax.mail.AuthenticationFailedException;
 import javax.mail.MessagingException;
-import javax.mail.Session;
 import javax.swing.JButton;
-import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -119,11 +117,9 @@ public class LogInPanel extends JPanel
 		this.parent.getContentPane().remove(this);//removing and repainting
 		this.parent.getContentPane().revalidate();
 		this.parent.getContentPane().repaint();
-		//add main part here!!!
-		//test 
-		//DisplayMessages display = new DisplayMessages(this.mySession,userName, password, "inbox");
-		//this.parent.add(display);
-		ComposeEmail compose = new ComposeEmail(this.mySession);
+		
+		MainMenuPanel main = new MainMenuPanel(this.mySession,userName,password,this.parent);//displaying the main menu
+		this.parent.add(main);
 	}
 	
 	/**this method closes everything for good practice at the end of the system running

@@ -1,14 +1,21 @@
 package guiCode;
 
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
+
 import javax.mail.MessagingException;
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+import javax.swing.border.Border;
+import javax.swing.border.EtchedBorder;
+import javax.swing.border.TitledBorder;
 
 import setup.CreateSession;
 
@@ -28,7 +35,6 @@ public class MainMenuPanel extends JPanel
 	
 	//all window components
 	private DisplayMessages messages;
-	private JLabel folders;
 	
 	private JButton inbox;
 	private JButton sent;
@@ -65,25 +71,43 @@ public class MainMenuPanel extends JPanel
 		
 		this.sent = new JButton("Sent");
 		this.sent.addActionListener(e -> this.displayNewFolder(this.sent,"[Gmail]/Sent Mail"));
-		
+				
 		this.drafts = new JButton("Drafts");
 		this.drafts.addActionListener(e -> this.displayNewFolder(this.drafts, "[Gmail]/Drafts"));
-		
+				
 		this.currentButton = this.inbox;//i don't want the current button to be enabled
 		this.currentButton.setEnabled(false);
-		
-		this.compose = new JButton("Compose Email");
-		//add action listener once written
-		
+				
 		this.refresh = new JButton("Refresh");
 		this.refresh.addActionListener(e -> this.refreshMessages());
+		
+		JPanel foldersPanel = new JPanel();//will display all folder related items
+		GridLayout grid = new GridLayout(4,1);//layout for folders
+		grid.setVgap(20);
+		foldersPanel.setLayout(grid);
+		
+		Border etched = BorderFactory.createEtchedBorder(EtchedBorder.LOWERED);//setting border for panel
+		TitledBorder title = BorderFactory.createTitledBorder(etched, "Folders");
+		title.setTitlePosition(TitledBorder.TOP);
+		foldersPanel.setBorder(title);
+		
+		foldersPanel.add(this.inbox);//adding all necessary components
+		foldersPanel.add(this.drafts);
+		foldersPanel.add(this.sent);
+		foldersPanel.add(this.refresh);
+		
+		JPanel folderCover = new JPanel();//new panel to prevent stretching in border layout
+		folderCover.add(foldersPanel);
+		
+		this.compose = new JButton("Compose Email");
+		this.compose.addActionListener(e -> this.composeEmail());//will compose a new email
 		
 		this.search = new JButton();//to carry out search on messages
 		ImageIcon searchImg = new ImageIcon("jar and images/search.png");
 		this.search.setIcon(searchImg);
 		//insert action listener here
 		
-		this.searchBox = new JTextField();
+		this.searchBox = new JTextField(20);
 		
 		JPanel searchPanel = new JPanel();//want these two components kept together as they have to be combined to carry out functionality
 		searchPanel.add(this.searchBox);
@@ -94,10 +118,25 @@ public class MainMenuPanel extends JPanel
 		
 		this.logOut = new JButton("Log Out");//logs user out of account
 		this.logOut.addActionListener(e -> logOut());
+		JPanel logPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));//extra panel to prevent stretching
+		logPanel.add(this.logOut);
 		
 		this.scrollMessages = new JScrollPane();//scroll pane for the messages shown
-		this.scrollMessages.add(this.messages);//adding messages to panel
+		this.scrollMessages.setViewportView(this.messages);//adding messages to panel
+		this.scrollMessages.revalidate();
+		this.scrollMessages.repaint();
+
+		JPanel topBar = new JPanel();//panel for top operations
+		topBar.add(this.createFlag);
+		topBar.add(searchPanel);
+		topBar.add(this.compose);
 		
+		setLayout(new BorderLayout());//setting layout
+		
+		add(topBar,BorderLayout.NORTH);//adding main components
+		add(folderCover,BorderLayout.WEST);
+		add(this.scrollMessages,BorderLayout.CENTER);
+		add(logPanel,BorderLayout.SOUTH);
 		
 		
 	}
@@ -125,6 +164,14 @@ public class MainMenuPanel extends JPanel
 		this.messages.displayAll(this.userName, this.password, this.currentFolder);//recall the message displaying method
 	}
 	
+	/**method for use when compose button pressed
+	 * 
+	 */
+	private void composeEmail()
+	{
+		ComposeEmail compose = new ComposeEmail(this.mySession);//new jframe being opened
+	}
+	
 	/**this method will log the user out of their email account and take them back to the user log in page
 	 * 
 	 */
@@ -144,7 +191,7 @@ public class MainMenuPanel extends JPanel
 		this.parent.getContentPane().repaint();
 		
 		LogInPanel newLogIn = new LogInPanel(this.parent);//adding a new log in panel
-		this.parent.add(newLogIn);
+		this.parent.getContentPane().add(newLogIn);
 	}
 	
 }
