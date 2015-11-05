@@ -31,14 +31,14 @@ public class RunClient
 		mainFrame.addWindowListener(new WindowAdapter(){//closing all parts of connection on exit
 			public void windowClosing(WindowEvent e)
 			{
-					try
-					{
-						logIn.closeAll();
-					}
-					catch(RuntimeException f)//in case not yet properly set up i.e not logged in
-					{
-						System.exit(0);//just exit the system as wished
-					}
+				try//try to close everything
+				{
+					logIn.closeAll();
+				}
+				catch(RuntimeException f)//in case not yet properly set up i.e not logged in
+				{
+					System.exit(0);//just exit the system as wished
+				}
 				
 				System.exit(0);//closing system down
 			}

@@ -1,6 +1,7 @@
 package guiCode;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 
@@ -17,7 +18,7 @@ import javax.swing.border.Border;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
 
-import setup.CreateSession;
+import useful_ops.CreateSession;
 
 /**this class will be the main interface for the email client
  * 
@@ -27,8 +28,6 @@ import setup.CreateSession;
 public class MainMenuPanel extends JPanel
 {
 	private CreateSession mySession;//all the information I need for this part of the program
-	private String userName;
-	private String password;
 	private JFrame parent;
 	private String currentFolder;
 	private JButton currentButton;//to keep track of enabled buttons
@@ -54,14 +53,12 @@ public class MainMenuPanel extends JPanel
 	 * @param userName
 	 * @param password
 	 */
-	public MainMenuPanel(CreateSession mySession, String userName, String password, JFrame parent)
+	public MainMenuPanel(CreateSession mySession, JFrame parent)
 	{
 		this.mySession = mySession;
-		this.userName = userName;
-		this.password = password;
 		this.parent = parent;
 		this.currentFolder = "inbox";//program will always start with inbox as folder
-		this.messages = new DisplayMessages(this.mySession, this.userName, this.password, this.currentFolder);//will create a panel of messages for me
+		this.messages = new DisplayMessages(this.mySession, this.currentFolder);//will create a panel of messages for me
 		
 		//set up for gui components
 		
@@ -70,7 +67,7 @@ public class MainMenuPanel extends JPanel
 		this.inbox.addActionListener(e -> this.displayNewFolder(this.inbox,"inbox"));
 		
 		this.sent = new JButton("Sent");
-		this.sent.addActionListener(e -> this.displayNewFolder(this.sent,"[Gmail]/Sent Mail"));
+		this.sent.addActionListener(e -> this.displayNewFolder(this.sent,"[Gmail]/Sent Mail"));//gmail has an odd folder system
 				
 		this.drafts = new JButton("Drafts");
 		this.drafts.addActionListener(e -> this.displayNewFolder(this.drafts, "[Gmail]/Drafts"));
@@ -105,7 +102,7 @@ public class MainMenuPanel extends JPanel
 		this.search = new JButton();//to carry out search on messages
 		ImageIcon searchImg = new ImageIcon("jar and images/search.png");
 		this.search.setIcon(searchImg);
-		//insert action listener here
+		this.search.addActionListener(e -> this.searchMessages());
 		
 		this.searchBox = new JTextField(20);
 		
@@ -113,7 +110,9 @@ public class MainMenuPanel extends JPanel
 		searchPanel.add(this.searchBox);
 		searchPanel.add(this.search);
 		
-		this.createFlag = new JButton("Create Custom Flag");//lets user create custom flag
+		this.createFlag = new JButton();//lets user create custom flag
+		ImageIcon flag = new ImageIcon("jar and images/flag.png");//adding image to picture
+		this.createFlag.setIcon(flag);
 		//insert action listener here once written
 		
 		this.logOut = new JButton("Log Out");//logs user out of account
@@ -148,7 +147,7 @@ public class MainMenuPanel extends JPanel
 	private void displayNewFolder(JButton newButton, String newFolder)
 	{
 		this.currentFolder = newFolder;//changing folder name
-		this.messages.displayAll(this.userName, this.password, this.currentFolder);
+		this.messages.displayAll(this.currentFolder,false,null);
 		
 		this.currentButton.setEnabled(true);//re-enabling old button
 		this.currentButton = newButton;
@@ -161,7 +160,17 @@ public class MainMenuPanel extends JPanel
 	 */
 	private void refreshMessages()
 	{
-		this.messages.displayAll(this.userName, this.password, this.currentFolder);//recall the message displaying method
+		this.messages.displayAll(this.currentFolder,false,null);//recall the message displaying method
+	}
+	
+	/** this method will carry out a search for the user and then display the search results
+	 * 
+	 */
+	private void searchMessages()
+	{
+		String searchTerm = this.searchBox.getText();//get users term
+		this.currentButton.setEnabled(true);//set current to be clickable again so that you can go back to standard folder
+		this.messages.displayAll(this.currentFolder, true, searchTerm);//re display messages
 	}
 	
 	/**method for use when compose button pressed

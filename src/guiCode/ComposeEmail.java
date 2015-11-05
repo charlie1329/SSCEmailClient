@@ -5,16 +5,7 @@ import java.awt.FlowLayout;
 import java.io.File;
 import java.util.ArrayList;
 
-import javax.activation.DataHandler;
-import javax.activation.DataSource;
-import javax.activation.FileDataSource;
-import javax.mail.Message;
 import javax.mail.MessagingException;
-import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeMultipart;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -25,7 +16,8 @@ import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
-import setup.CreateSession;
+import useful_ops.CreateSession;
+import useful_ops.PrepareMessage;
 
 /**this class represents the interface and function of sending an email (with attachments)
  * 
@@ -136,90 +128,6 @@ public class ComposeEmail extends JFrame
 		
 	}
 	
-	/**this method will get all the components of the message (except attachments which are already in message by now)
-	 * this means the email is well formed enough such that it can be sent
-	 * @throws RuntimeExcpetion, will be picked up elsewhere
-	 * @throws MessagingException will be caught elsewhere
-	 */
-	private MimeMessage formMessage() throws RuntimeException, MessagingException
-	{
-		MimeMessage toSend = new MimeMessage(this.mySession.getSession());//creating new message
-		
-		try
-		{
-			toSend.setFrom(new InternetAddress("charliestreet1329@gmail.com"));//setting from 
-			
-			MimeMultipart multiPart = new MimeMultipart();//will contain all parts of the email
-			
-			String mainRecipient = this.toField.getText();
-			toSend.addRecipient(Message.RecipientType.TO, new InternetAddress(mainRecipient));//adding main recipient
-			
-			String[] ccRecipient = this.ccField.getText().split(" ");//split by spaces
-			if(!ccRecipient[0].equals(""))//ie not empty
-			{
-				for(String cc: ccRecipient)//looping through al cc recipients
-				{
-					toSend.addRecipient(Message.RecipientType.CC, new InternetAddress(cc));//adding all cc to email
-				}
-			}
-			
-			String subject = this.subjectField.getText();
-			if(subject.equals(""))//if empty
-			{
-				int decision = JOptionPane.showConfirmDialog(this, "Do you want an empty subject? If no, please change.","Subject",JOptionPane.YES_NO_OPTION);
-				if(decision == JOptionPane.YES_OPTION)//if they want an empty message
-				{
-					subject = "(no subject)";//default option
-				}
-				else
-				{
-					throw new RuntimeException("Bad subject");
-				}
-			}
-			toSend.setSubject(subject);//setting the subject
-			
-			String content = this.mainContent.getText();//getting main content text
-			
-			MimeBodyPart mainBody = new MimeBodyPart();//body part for email content
-			
-			if(content.equals(""))//if nothing specified
-			{
-				int decision = JOptionPane.showConfirmDialog(this, "Blank message will be sent? If no, please change.","Body",JOptionPane.YES_NO_OPTION);
-				if(decision != JOptionPane.YES_OPTION)//if 
-				{
-					throw new RuntimeException("Bad content");//stop process if they want to change
-				}
-			}
-			
-			mainBody.setText(content);//setting this body part
-			
-			multiPart.addBodyPart(mainBody);//adding main body to email
-			
-			//now dealing with any attachments
-			for(String toAttach : this.attachments)//looping through file paths
-			{
-					MimeBodyPart myAttachment = new MimeBodyPart();//new body part
-					
-					DataSource source = new FileDataSource(toAttach);//process of adding the file
-					File current = new File(toAttach);//getting file object to get name
-					myAttachment.setDataHandler(new DataHandler(source));
-					myAttachment.setFileName(current.getName());
-					
-					multiPart.addBodyPart(myAttachment);//adding to mime multipart
-				
-			}
-			
-			toSend.setContent(multiPart);//adding multipart to the email
-			toSend.saveChanges();
-			
-		}
-		catch(AddressException e)//if address error
-		{
-			JOptionPane.showMessageDialog(this, "Error with recipient (main or cc).", "Recipient",JOptionPane.ERROR_MESSAGE);
-		}
-		
-		return toSend;	//returning the message
-	}
 	
 	/**this method will attempt to send the email
 	 * if it fails then the error will be caught and an error message will be popped up
@@ -228,8 +136,10 @@ public class ComposeEmail extends JFrame
 	{
 		try//try sending
 		{	
-			MimeMessage toSend = this.formMessage();//finally creating the message to send
-			this.mySession.getTransport().sendMessage(toSend, toSend.getAllRecipients());//send the message
+			PrepareMessage newMessage = new PrepareMessage(this.mySession,this);
+			newMessage.sendMessage(this.toField.getText(), this.ccField.getText(), this.subjectField.getText(),
+									this.mainContent.getText(), this.attachments);//try and send message
+			
 			JOptionPane.showMessageDialog(this,"Email successfully sent.","Email Sent",JOptionPane.INFORMATION_MESSAGE);//confirmation pop up
 			
 			setVisible(false);

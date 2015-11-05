@@ -8,20 +8,16 @@ import java.awt.event.MouseEvent;
 
 import javax.mail.Flags;
 import javax.mail.Flags.Flag;
-import javax.mail.Folder;
 import javax.mail.Message;
 import javax.mail.MessagingException;
-import javax.mail.Session;
-import javax.mail.Store;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-import setup.CreateSession;
-
-import com.sun.mail.imap.IMAPFolder;
+import useful_ops.CreateSession;
+import useful_ops.ReadContents;
 
 /**this class represents the displaying of the emails on the scroll pane
  * 
@@ -30,24 +26,21 @@ import com.sun.mail.imap.IMAPFolder;
  */
 public class DisplayMessages extends JPanel
 {
-	private Session session;
-	private Store store;
-	private IMAPFolder folder;
+	private CreateSession mySession;
 	
 	/**constructor will create panel of messages, using specified folder and imaps protocol
 	 * 
 	 * @param mySession the CreateSession object being used
 	 * @param userName the current user name and password
 	 * @param password the current password
-	 * @param folder the folder being used
+	 * @param folder the folder being used at the start
 	 */
-	public DisplayMessages(CreateSession mySession, String userName, String password, String folder)
+	public DisplayMessages(CreateSession mySession,String folder)
 	{
-		this.session = mySession.getSession();
-		this.store = mySession.getStore();
-		this.displayAll(userName, password, folder);//calling as I don't want constructor dealing with exceptions
+		this.mySession = mySession;
+		this.displayAll(folder,false,null);//calling as I don't want constructor dealing with exceptions
 		
-		GridLayout newGrid = new GridLayout(0,1);//setting to grid
+		GridLayout newGrid = new GridLayout(0,1);//setting to grid to give a list of items all of the same size
 		setLayout(newGrid);
 	}
 	
@@ -56,8 +49,10 @@ public class DisplayMessages extends JPanel
 	 * @param userName the account address
 	 * @param password the account password
 	 * @param folder a string representing the folder to open
+	 * @param searchWanted a boolean value saying whether a search is wanted
+	 * @param searchTerm the term to search for (keep to null if searchWanted == false
 	 */
-	public void displayAll(String userName, String password, String folder)
+	public void displayAll(String folder,boolean searchWanted,String searchTerm)
 	{
 		removeAll();//remove everything already in panel
 		repaint();
@@ -65,26 +60,17 @@ public class DisplayMessages extends JPanel
 		
 		try
 		{
-			this.store = this.session.getStore("imaps");
-			this.store.connect("imap.googlemail.com",userName,password);//connecting to store
+			Message[] messages = this.mySession.openFolder(folder,searchWanted,searchTerm);//getting all messages
 			
-			this.folder = (IMAPFolder)this.store.getFolder(folder);//getting folder
-			
-			if(!this.folder.isOpen())//opening the folder
-			{
-				this.folder.open(Folder.READ_WRITE);
-			}
-			
-			Message[] messages = this.folder.getMessages();//getting all messages
-			
-			setPreferredSize(new Dimension(this.getWidth(),messages.length * 30));//setting size of panel for scroll bar
-			
-			for(Message message: messages)//looping round each message
+			setPreferredSize(new Dimension(440,messages.length * 30));//setting size of panel for scroll bar
+			setMaximumSize(new Dimension(440,messages.length * 30));
+			for(Message message: messages)//looping round each message so ot can be displayed
 			{
 				JPanel currentEmail = new JPanel();//panel per email
 				currentEmail.setLayout(null);//allows sime absolute positioning
 				currentEmail.setOpaque(true);//allows me to change colour
 				
+				//code for 1.2
 				Flags messageFlags = message.getFlags();//getting the flags of the message
 				if(messageFlags.contains(Flag.SEEN))//if read make it gray, else white
 				{
@@ -101,8 +87,9 @@ public class DisplayMessages extends JPanel
 					ImageIcon recimg = new ImageIcon("jar and images/recent.png");//getting the image
 					recent.setIcon(recimg);
 				}
+				//end of 1.2 code
 				
-				String sender = message.getFrom()[0].toString().split(" ")[0];//sender of email
+				String sender = ReadContents.getMainSender(message).split(" ")[0];//sender of email
 				if(sender.length() > 20)//cutting down if necessary
 				{
 					sender = sender.substring(0,17)+"...";
@@ -163,5 +150,6 @@ public class DisplayMessages extends JPanel
 			JOptionPane.showMessageDialog(this, "There has been an error retreiving emails. Please try again later","Email error" ,JOptionPane.ERROR_MESSAGE);
 		}
 	}
+	
 	
 }

@@ -11,7 +11,7 @@ import javax.swing.JPasswordField;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 
-import setup.CreateSession;
+import useful_ops.CreateSession;
 
 import java.awt.Font;
 
@@ -118,7 +118,7 @@ public class LogInPanel extends JPanel
 		this.parent.getContentPane().revalidate();
 		this.parent.getContentPane().repaint();
 		
-		MainMenuPanel main = new MainMenuPanel(this.mySession,userName,password,this.parent);//displaying the main menu
+		MainMenuPanel main = new MainMenuPanel(this.mySession, this.parent);//displaying the main menu
 		this.parent.add(main);
 	}
 	
