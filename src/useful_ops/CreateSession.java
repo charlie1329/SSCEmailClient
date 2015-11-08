@@ -1,9 +1,13 @@
 package useful_ops;
 
 import java.awt.Component;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 import javax.mail.AuthenticationFailedException;
+import javax.mail.Flags;
 import javax.mail.Folder;
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -27,6 +31,7 @@ public class CreateSession
 	private Store store;
 	private String userName;
 	private final String SMTPHOST;
+	private HashMap<Flags,String> userFlags;//where all user flags are stored
 	
 	/**takes a user name and password and creates a session
 	 * using smtp and imaps in a single session
@@ -38,6 +43,7 @@ public class CreateSession
 	{
 		this.SMTPHOST = "smtp.gmail.com";//using gmail as SMTP host
 		this.userName = userName;
+		this.userFlags = new HashMap<Flags,String>();//empty to start
 		
 		Properties properties = System.getProperties();//setting correct properties
 		properties.put("mail.smtp.auth", "true");
@@ -101,10 +107,11 @@ public class CreateSession
 	 * @param folder the folder name being connected to
 	 * @param searchWanted will specify whether a search ought to be carried out
 	 * @param searchTerm the term to search for (if needed)
+	 * @param noChaned whether flags have been changed
 	 * @return all the messages of that folder
 	 * @throws MessagingException will be thrown then caught by the gui code
 	 */
-	public Message[] openFolder(String folder, boolean searchWanted, String searchTerm) throws MessagingException
+	public Message[] openFolder(String folder, boolean searchWanted, String searchTerm,boolean noChanged) throws MessagingException
 	{
 		
 		Folder realFolder = (IMAPFolder)this.getStore().getFolder(folder);//getting folder
@@ -116,12 +123,13 @@ public class CreateSession
 		
 		if(searchWanted)//search (according to documentation this is done on the server)
 		{
-			SearchEmailTerm searcher = new SearchEmailTerm(searchTerm);
+			SearchEmailTerm searcher = new SearchEmailTerm(searchTerm,noChanged,this);
 			return realFolder.search(searcher);//returning results of search instead
 		}
 		else//no search
 		{
-			return realFolder.getMessages();//returning messages contained in folder
+			FlagAndFilter filter = new FlagAndFilter(noChanged,this);
+			return realFolder.search(filter);//returning messages contained in folder while applying filter
 		}
 	}
 	
@@ -157,5 +165,52 @@ public class CreateSession
 			this.transport.close();
 		}
 		
+	}
+	
+	/**returns the entry set of the hash map
+	 * this allows me to iterate through it while restricting access to the hash map
+	 * @return the entry set of the hash map
+	 */
+	public Set<Map.Entry<Flags, String>> getEntrySet()
+	{
+			return this.userFlags.entrySet();
+	}
+	
+	/**this method adds a new user flag to the hash map with it's associated keyword
+	 * 
+	 * @param name the name for the flag
+	 * @param keyword the keyword to be filtered by wrt this flag
+	 * @throws RuntimeException will be caught by gui code
+	 */
+	public void addFlag(String name, String keyword) throws RuntimeException
+	{
+		if(name.equals("") || keyword.equals(""))//need valid data input
+		{
+			throw new RuntimeException("Must have entered two valid strings");
+		}
+		else
+		{
+			Flags newFlag = new Flags(name);//creating a new flags object
+			this.userFlags.put(newFlag, keyword);//adding to hash map
+		}
+	}
+	
+	/**this method returns a flag name from the flag
+	 * i can do this because i ensure each flag will only have one name associated with it
+	 * @param flag the flag to check
+	 * @return the flags name (set by user)
+	 */
+	public String getFlagName(Flags flag)
+	{
+		return flag.getUserFlags()[0];
+	}
+	
+	/**this method removes an entry from the hash map, i.e the user no longer wants to filter with respect to this
+	 * 
+	 * @param flag the key to remove from the hash map
+	 */
+	public void remove(Flags flag)
+	{
+		this.userFlags.remove(flag);
 	}
 }

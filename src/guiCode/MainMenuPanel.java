@@ -113,7 +113,7 @@ public class MainMenuPanel extends JPanel
 		this.createFlag = new JButton();//lets user create custom flag
 		ImageIcon flag = new ImageIcon("jar and images/flag.png");//adding image to picture
 		this.createFlag.setIcon(flag);
-		//insert action listener here once written
+		this.createFlag.addActionListener(e -> goToFlags());
 		
 		this.logOut = new JButton("Log Out");//logs user out of account
 		this.logOut.addActionListener(e -> logOut());
@@ -147,7 +147,7 @@ public class MainMenuPanel extends JPanel
 	private void displayNewFolder(JButton newButton, String newFolder)
 	{
 		this.currentFolder = newFolder;//changing folder name
-		this.messages.displayAll(this.currentFolder,false,null);
+		this.messages.displayAll(this.currentFolder,false,null,false);
 		
 		this.currentButton.setEnabled(true);//re-enabling old button
 		this.currentButton = newButton;
@@ -160,7 +160,7 @@ public class MainMenuPanel extends JPanel
 	 */
 	private void refreshMessages()
 	{
-		this.messages.displayAll(this.currentFolder,false,null);//recall the message displaying method
+		this.messages.displayAll(this.currentFolder,false,null,false);//recall the message displaying method
 	}
 	
 	/** this method will carry out a search for the user and then display the search results
@@ -170,7 +170,7 @@ public class MainMenuPanel extends JPanel
 	{
 		String searchTerm = this.searchBox.getText();//get users term
 		this.currentButton.setEnabled(true);//set current to be clickable again so that you can go back to standard folder
-		this.messages.displayAll(this.currentFolder, true, searchTerm);//re display messages
+		this.messages.displayAll(this.currentFolder, true, searchTerm,false);//re display messages
 	}
 	
 	/**method for use when compose button pressed
@@ -179,6 +179,14 @@ public class MainMenuPanel extends JPanel
 	private void composeEmail()
 	{
 		ComposeEmail compose = new ComposeEmail(this.mySession);//new jframe being opened
+	}
+	
+	/**this method will open the flags screen for the user
+	 * 
+	 */
+	private void goToFlags()
+	{
+		SetFlags flags = new SetFlags(this.mySession,this.messages,this.currentFolder);//will open a new window
 	}
 	
 	/**this method will log the user out of their email account and take them back to the user log in page

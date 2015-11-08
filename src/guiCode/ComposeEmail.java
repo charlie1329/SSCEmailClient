@@ -95,7 +95,9 @@ public class ComposeEmail extends JFrame
 		
 		this.mainContent = new JTextArea(10,52);//add dimensions in if necessary!	
 		
-		this.send = new JButton("Send");//send button will try to send email
+		this.send = new JButton();//send button will try to send email
+		ImageIcon sendIcon = new ImageIcon("jar and images/send.png");
+		this.send.setIcon(sendIcon);
 		this.send.addActionListener(e -> this.send());
 		
 		//adding to panel now

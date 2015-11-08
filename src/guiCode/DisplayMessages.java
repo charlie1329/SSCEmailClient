@@ -38,7 +38,7 @@ public class DisplayMessages extends JPanel
 	public DisplayMessages(CreateSession mySession,String folder)
 	{
 		this.mySession = mySession;
-		this.displayAll(folder,false,null);//calling as I don't want constructor dealing with exceptions
+		this.displayAll(folder,false,null,false);//calling as I don't want constructor dealing with exceptions
 		
 		GridLayout newGrid = new GridLayout(0,1);//setting to grid to give a list of items all of the same size
 		setLayout(newGrid);
@@ -51,8 +51,9 @@ public class DisplayMessages extends JPanel
 	 * @param folder a string representing the folder to open
 	 * @param searchWanted a boolean value saying whether a search is wanted
 	 * @param searchTerm the term to search for (keep to null if searchWanted == false
+	 * @param noChanged whether flags removed recently
 	 */
-	public void displayAll(String folder,boolean searchWanted,String searchTerm)
+	public void displayAll(String folder,boolean searchWanted,String searchTerm,boolean noChanged)
 	{
 		removeAll();//remove everything already in panel
 		repaint();
@@ -60,14 +61,14 @@ public class DisplayMessages extends JPanel
 		
 		try
 		{
-			Message[] messages = this.mySession.openFolder(folder,searchWanted,searchTerm);//getting all messages
+			Message[] messages = this.mySession.openFolder(folder,searchWanted,searchTerm,noChanged);//getting all messages
 			
 			setPreferredSize(new Dimension(440,messages.length * 30));//setting size of panel for scroll bar
 			setMaximumSize(new Dimension(440,messages.length * 30));
 			for(Message message: messages)//looping round each message so ot can be displayed
 			{
 				JPanel currentEmail = new JPanel();//panel per email
-				currentEmail.setLayout(null);//allows sime absolute positioning
+				currentEmail.setLayout(null);//allows some absolute positioning
 				currentEmail.setOpaque(true);//allows me to change colour
 				
 				//code for 1.2

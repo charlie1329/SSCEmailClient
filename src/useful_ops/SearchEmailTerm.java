@@ -18,15 +18,19 @@ import javax.mail.search.SearchTerm;
 public class SearchEmailTerm extends SearchTerm
 {
 	private String toMatch;
+	private FlagAndFilter flag;//needed also 
 	
 	/**this constructor initialises the matching term for this search term
 	 * 
 	 * @param toMatch the search term as a string
+	 * @param anyChanged if any flags have been changed recently
+	 * @param mySesion containing the necessary hash map
 	 */
-	public SearchEmailTerm(String toMatch)
+	public SearchEmailTerm(String toMatch, boolean anyChanged, CreateSession mySession)
 	{
 		super();//calling super constructor
 		this.toMatch = toMatch;
+		this.flag = new FlagAndFilter(anyChanged, mySession);
 	}
 	
 	/**this method searches through the email and then returns true
@@ -35,7 +39,8 @@ public class SearchEmailTerm extends SearchTerm
 	 */
 	public boolean match(Message message) 
 	{
-		return this.checkHeaderFromSubject(message) || this.checkBody(message) || this.checkHeaderDetails(message);//carrying out checks
+		return this.flag.match(message) && (this.checkHeaderFromSubject(message) || this.checkBody(message) || this.checkHeaderDetails(message));//carrying out checks
+		//flag needs to return true if we are to display the message
 	}
 	
 	/**this method will check the contents of the message for the string matcher
